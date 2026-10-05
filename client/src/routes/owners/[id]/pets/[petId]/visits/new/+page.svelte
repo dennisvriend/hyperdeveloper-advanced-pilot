@@ -2,10 +2,13 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { createVisitForPet } from '$lib/api/visit/VisitController';
+	import { getVets } from '$lib/api/vet/VetController';
+	import type { VetResponse } from '$lib/api/models';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
+	import * as Select from '$lib/components/ui/select';
 	import { ArrowLeft, Loader2 } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 
@@ -14,7 +17,24 @@
 
 	let visitDate = $state(new Date().toISOString().split('T')[0]);
 	let description = $state('');
+	let selectedVetId = $state<string>('');
+	let vets = $state<VetResponse[]>([]);
 	let submitting = $state(false);
+
+	const selectedVet = $derived(vets.find((vet) => vet.id.toString() === selectedVetId));
+
+	async function loadVets() {
+		try {
+			vets = await getVets();
+		} catch (err) {
+			toast.error('Failed to load vets');
+			console.error('Error loading vets:', err);
+		}
+	}
+
+	$effect(() => {
+		loadVets();
+	});
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
@@ -23,7 +43,8 @@
 		try {
 			await createVisitForPet(ownerId, petId, {
 				date: visitDate,
-				description: description.trim()
+				description: description.trim(),
+				vetId: selectedVet?.id
 			});
 			toast.success('Visit recorded successfully');
 			goto(`/owners/${ownerId}/pets/${petId}`);
@@ -63,6 +84,28 @@
 					required
 					disabled={submitting}
 				/>
+			</div>
+
+			<div class="space-y-2">
+				<Label for="vet">Veterinarian (optional)</Label>
+				<Select.Root
+					type="single"
+					bind:value={selectedVetId}
+					disabled={submitting}
+				>
+					<Select.Trigger id="vet" class="w-full">
+						{selectedVet
+							? `${selectedVet.firstName} ${selectedVet.lastName}`
+							: '— none —'}
+					</Select.Trigger>
+					<Select.Content>
+						{#each vets as vet (vet.id)}
+							<Select.Item value={vet.id.toString()}>
+								{vet.firstName} {vet.lastName}
+							</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
 			</div>
 
 			<div class="space-y-2">

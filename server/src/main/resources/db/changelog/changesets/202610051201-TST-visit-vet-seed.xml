@@ -1,0 +1,18 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+                   logicalFilePath="202610051201-TST-visit-vet-seed.xml">
+
+    <changeSet id="202610051201-TST-visit-vet-seed-1" author="dennis.vriend" context="tst">
+        <comment>Assigning vets to the seeded visits for testing and development.</comment>
+        <sql>
+            UPDATE visits SET vet_id = 2 WHERE id = 1;
+            UPDATE visits SET vet_id = 1 WHERE id = 2;
+            UPDATE visits SET vet_id = 3 WHERE id = 3;
+            UPDATE visits SET vet_id = 5 WHERE id = 4;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

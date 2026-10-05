@@ -414,4 +414,55 @@ class PetControllerTest extends IntegrationTest {
             .andExpect(jsonPath("$.length()").value(0));
     }
 
+
+    @Test
+    void shouldCreateVisitWithVet() throws Exception {
+        // Given: a saved owner with a saved pet, and a vet from the seed data
+        final Owner owner = aSavedOwner();
+        final Pet pet = aSavedPet(owner);
+        final long vetId = 1L;
+
+        String requestBody = """
+            {
+                "date": "2025-06-15",
+                "description": "Annual vaccination",
+                "vetId": %d
+            }
+            """.formatted(vetId);
+
+        // When & Then
+        mockMvc.perform(
+            post("/api/v1/owners/{ownerId}/pets/{petId}/visits", owner.getId(), pet.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+        )
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.description").value("Annual vaccination"))
+            .andExpect(jsonPath("$.vet").exists())
+            .andExpect(jsonPath("$.vet.id").value(vetId));
+    }
+
+    @Test
+    void shouldCreateVisitWithoutVet() throws Exception {
+        // Given: a saved owner with a saved pet, no vet specified
+        final Owner owner = aSavedOwner();
+        final Pet pet = aSavedPet(owner);
+
+        String requestBody = """
+            {
+                "date": "2025-06-15",
+                "description": "Walk-in checkup"
+            }
+            """;
+
+        // When & Then
+        mockMvc.perform(
+            post("/api/v1/owners/{ownerId}/pets/{petId}/visits", owner.getId(), pet.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+        )
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.description").value("Walk-in checkup"))
+            .andExpect(jsonPath("$.vet").doesNotExist());
+    }
 }

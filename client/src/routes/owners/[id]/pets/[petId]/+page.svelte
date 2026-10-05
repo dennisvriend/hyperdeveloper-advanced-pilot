@@ -145,7 +145,9 @@
 
 		<!-- Visits Section -->
 		<div class="mb-6 flex items-center justify-between">
-			<h2 class="text-xl font-semibold text-foreground">Visit History</h2>
+			<h2 class="text-xl font-semibold text-foreground">
+				Visit History ({pet.visits?.length ?? 0})
+			</h2>
 			<Button href="/owners/{ownerId}/pets/{petId}/visits/new" class="gap-2">
 				<Plus class="h-4 w-4" />
 				Add Visit
@@ -163,7 +165,7 @@
 			</div>
 		{:else}
 			<div class="space-y-4">
-				{#each pet.visits.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) as visit (visit.id)}
+				{#each [...(pet.visits ?? [])].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) as visit (visit.id)}
 					<Card.Root>
 						<Card.Content class="pt-6">
 							<div class="flex items-start justify-between">
@@ -173,7 +175,10 @@
 									</div>
 									<div>
 										<p class="font-medium text-foreground">{visit.description}</p>
-										<p class="text-sm text-muted-foreground">{formatDate(visit.date)}</p>
+										<p class="text-sm text-muted-foreground">
+											{formatDate(visit.date)}{#if visit.vet}&nbsp;•&nbsp;Dr. {visit.vet.firstName}
+												{visit.vet.lastName}{/if}
+										</p>
 									</div>
 								</div>
 							</div>

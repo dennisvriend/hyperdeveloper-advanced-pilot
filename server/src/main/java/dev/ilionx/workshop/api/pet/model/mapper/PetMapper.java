@@ -6,6 +6,7 @@ import dev.ilionx.workshop.api.pet.model.response.PetResponse;
 import dev.ilionx.workshop.api.pet.model.response.PetTypeResponse;
 import dev.ilionx.workshop.api.pet.model.response.VisitSummaryResponse;
 import dev.ilionx.workshop.api.visit.model.Visit;
+import dev.ilionx.workshop.api.visit.model.mapper.VisitMapper;
 import io.github.jframe.util.mapper.config.SharedMapperConfig;
 
 import java.util.List;
@@ -16,7 +17,10 @@ import org.mapstruct.Mapping;
 /**
  * MapStruct mapper for converting Pet entities to response DTOs.
  */
-@Mapper(config = SharedMapperConfig.class)
+@Mapper(
+    config = SharedMapperConfig.class,
+    uses = VisitMapper.class
+)
 public abstract class PetMapper {
 
     @Mapping(

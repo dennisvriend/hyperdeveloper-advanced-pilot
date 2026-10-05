@@ -37,3 +37,6 @@ server/**config/*.local.properties
 /server/.settings/org.eclipse.buildship.core.prefsc
 
 /.opencode/
+
+# Downloaded OpenAPI spec (regenerate via scripts/openapi-sync.sh)
+/server/openapi.json

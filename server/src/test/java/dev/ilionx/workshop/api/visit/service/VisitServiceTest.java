@@ -2,6 +2,8 @@ package dev.ilionx.workshop.api.visit.service;
 
 import dev.ilionx.workshop.api.pet.model.Pet;
 import dev.ilionx.workshop.api.pet.repository.PetRepository;
+import dev.ilionx.workshop.api.vet.model.Vet;
+import dev.ilionx.workshop.api.vet.repository.VetRepository;
 import dev.ilionx.workshop.api.visit.model.Visit;
 import dev.ilionx.workshop.api.visit.model.request.CreateVisitRequest;
 import dev.ilionx.workshop.api.visit.model.request.UpdateVisitRequest;
@@ -39,16 +41,20 @@ class VisitServiceTest extends UnitTest {
     private static final String VALID_VISIT_DESCRIPTION = "Rabies shot";
     private static final Integer NON_EXISTENT_PET_ID = 999;
     private static final Integer NON_EXISTENT_VISIT_ID = 999;
+    private static final Integer VALID_VET_ID = 1;
+    private static final Integer NON_EXISTENT_VET_ID = 999;
 
     private PetRepository petRepository;
+    private VetRepository vetRepository;
     private VisitRepository visitRepository;
     private VisitService visitService;
 
     @BeforeEach
     void setUp() {
         petRepository = mock(PetRepository.class);
+        vetRepository = mock(VetRepository.class);
         visitRepository = mock(VisitRepository.class);
-        visitService = new VisitService(petRepository, visitRepository);
+        visitService = new VisitService(petRepository, vetRepository, visitRepository);
     }
 
     @Test
@@ -281,6 +287,110 @@ class VisitServiceTest extends UnitTest {
         );
 
         assertThat(exception.getMessage(), is(equalTo("The requested visit does not exist.")));
+    }
+
+    @Test
+    @DisplayName("Should create visit with vet when valid vet ID provided")
+    void shouldCreateVisitWithVetWhenValidVetIdProvided() {
+        // Given: A valid create request with a vet ID referencing an existing vet
+        final CreateVisitRequest request = new CreateVisitRequest();
+        request.setDate(VALID_VISIT_DATE);
+        request.setDescription(VALID_VISIT_DESCRIPTION);
+        request.setVetId(VALID_VET_ID);
+        final Pet pet = aValidPet();
+        final Vet vet = aValidVet();
+        final Visit savedVisit = aValidVisit();
+        savedVisit.setVet(vet);
+        given(petRepository.findById(VALID_PET_ID)).willReturn(Optional.of(pet));
+        given(vetRepository.findById(VALID_VET_ID)).willReturn(Optional.of(vet));
+        given(visitRepository.save(any(Visit.class))).willReturn(savedVisit);
+
+        // When: Creating the visit
+        final Visit actualVisit = visitService.create(VALID_PET_ID, request);
+
+        // Then: The visit should be saved with the resolved vet
+        assertThat(actualVisit.getVet(), is(notNullValue()));
+        assertThat(actualVisit.getVet().getId(), is(equalTo(VALID_VET_ID)));
+    }
+
+    @Test
+    @DisplayName("Should create visit without vet when no vet ID provided")
+    void shouldCreateVisitWithoutVetWhenNoVetIdProvided() {
+        // Given: A valid create request without a vet ID
+        final CreateVisitRequest request = new CreateVisitRequest();
+        request.setDate(VALID_VISIT_DATE);
+        request.setDescription(VALID_VISIT_DESCRIPTION);
+        final Pet pet = aValidPet();
+        final Visit savedVisit = aValidVisit();
+        given(petRepository.findById(VALID_PET_ID)).willReturn(Optional.of(pet));
+        given(visitRepository.save(any(Visit.class))).willReturn(savedVisit);
+
+        // When: Creating the visit
+        final Visit actualVisit = visitService.create(VALID_PET_ID, request);
+
+        // Then: The visit should be saved without a vet
+        assertThat(actualVisit.getVet(), is(equalTo(null)));
+    }
+
+    @Test
+    @DisplayName("Should throw DataNotFoundException when vet does not exist for create")
+    void shouldThrowDataNotFoundExceptionWhenVetDoesNotExistForCreate() {
+        // Given: A create request referencing a non-existent vet
+        final CreateVisitRequest request = new CreateVisitRequest();
+        request.setDate(VALID_VISIT_DATE);
+        request.setDescription(VALID_VISIT_DESCRIPTION);
+        request.setVetId(NON_EXISTENT_VET_ID);
+        given(petRepository.findById(VALID_PET_ID)).willReturn(Optional.of(aValidPet()));
+        given(vetRepository.findById(NON_EXISTENT_VET_ID)).willReturn(Optional.empty());
+
+        // When & Then: Creating a visit with a non-existent vet should throw DataNotFoundException
+        final DataNotFoundException exception = assertThrows(
+            DataNotFoundException.class,
+            () -> visitService.create(VALID_PET_ID, request)
+        );
+
+        assertThat(exception.getMessage(), is(equalTo("The requested vet does not exist.")));
+    }
+
+    @Test
+    @DisplayName("Should update visit vet attribution when valid vet ID provided")
+    void shouldUpdateVisitVetAttributionWhenValidVetIdProvided() {
+        // Given: An existing visit and an update request with a vet ID
+        final Visit existingVisit = aValidVisit();
+        final UpdateVisitRequest request = new UpdateVisitRequest();
+        request.setDate(VALID_VISIT_DATE);
+        request.setDescription(VALID_VISIT_DESCRIPTION);
+        request.setVetId(VALID_VET_ID);
+        final Vet vet = aValidVet();
+        given(visitRepository.findById(VALID_VISIT_ID)).willReturn(Optional.of(existingVisit));
+        given(vetRepository.findById(VALID_VET_ID)).willReturn(Optional.of(vet));
+        given(visitRepository.save(any(Visit.class))).willReturn(existingVisit);
+
+        // When: Updating the visit
+        visitService.update(VALID_VISIT_ID, request);
+
+        // Then: The vet attribution should be set
+        assertThat(existingVisit.getVet(), is(notNullValue()));
+        assertThat(existingVisit.getVet().getId(), is(equalTo(VALID_VET_ID)));
+    }
+
+    @Test
+    @DisplayName("Should clear visit vet attribution when vet ID is null on update")
+    void shouldClearVisitVetAttributionWhenVetIdIsNullOnUpdate() {
+        // Given: An existing visit with a vet and an update request without a vet ID
+        final Visit existingVisit = aValidVisit();
+        existingVisit.setVet(aValidVet());
+        final UpdateVisitRequest request = new UpdateVisitRequest();
+        request.setDate(VALID_VISIT_DATE);
+        request.setDescription(VALID_VISIT_DESCRIPTION);
+        given(visitRepository.findById(VALID_VISIT_ID)).willReturn(Optional.of(existingVisit));
+        given(visitRepository.save(any(Visit.class))).willReturn(existingVisit);
+
+        // When: Updating the visit
+        visitService.update(VALID_VISIT_ID, request);
+
+        // Then: The vet attribution should be cleared
+        assertThat(existingVisit.getVet(), is(equalTo(null)));
     }
 
 }
