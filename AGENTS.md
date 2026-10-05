@@ -41,3 +41,11 @@ Then run `bun run check` in `client/`. Details in both package AGENTS.md files:
 
 1. `server/`: `./gradlew build` (includes tests + quality checks)
 2. `client/`: `bun run check`
+
+## Workflow
+
+When I tell you a feature is complete:
+
+1. Move the story from `.opencode/refined/` to `.opencode/completed/`
+2. Prepend the date to the filename (e.g., `20261005-VET-#-<slug>.md`)
+3. Add a row to `.opencode/CHANGELOG.md`
