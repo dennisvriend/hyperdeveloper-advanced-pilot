@@ -122,7 +122,22 @@ public class PetService {
      */
     @Transactional(readOnly = true)
     public List<Pet> findAll() {
-        return petRepository.findAll();
+        return findAll(null);
+    }
+
+    /**
+     * Retrieves all pets in the system, optionally filtered by name.
+     *
+     * @param name optional name fragment to filter by (case-insensitive contains);
+     *             when null or blank, all pets are returned
+     * @return list of pets matching the filter
+     */
+    @Transactional(readOnly = true)
+    public List<Pet> findAll(final String name) {
+        if (name == null || name.isBlank()) {
+            return petRepository.findAll();
+        }
+        return petRepository.findByNameContainingIgnoreCase(name);
     }
 
     /**

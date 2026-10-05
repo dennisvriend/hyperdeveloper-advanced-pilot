@@ -39,14 +39,16 @@ public class PetGlobalController {
     @ResponseStatus(OK)
     @Operation(
         summary = "Get all pets",
-        description = "Returns a list of all pets"
+        description = "Returns a list of all pets, optionally filtered by name (case-insensitive contains)"
     )
     @GetMapping(
         path = PETS,
         produces = APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<List<PetResponse>> getAllPets() {
-        final List<Pet> pets = petService.findAll();
+    public ResponseEntity<List<PetResponse>> getAllPets(
+        @RequestParam(required = false) final String name
+    ) {
+        final List<Pet> pets = petService.findAll(name);
         return ResponseEntity.status(OK).body(petMapper.toResponseList(pets));
     }
 

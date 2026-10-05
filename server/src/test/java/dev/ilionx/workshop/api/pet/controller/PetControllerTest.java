@@ -358,4 +358,60 @@ class PetControllerTest extends IntegrationTest {
         final ErrorResponseResource error = fromJson(content, ErrorResponseResource.class);
         assertThat(error.getErrorMessage(), is(equalTo(PET_NOT_FOUND.getReason())));
     }
+
+    @Test
+    void shouldReturnPetsByName() throws Exception {
+        // Given: pets exist in the database (seeded by Liquibase)
+
+        // When & Then: searching for a known pet name returns matching results
+        mockMvc.perform(
+            get("/api/v1/pets")
+                .param("name", "Buddy")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$[*].name", everyItem(containsStringIgnoringCase("Buddy"))));
+    }
+
+    @Test
+    void shouldSearchCaseInsensitively() throws Exception {
+        mockMvc.perform(
+            get("/api/v1/pets")
+                .param("name", "buddy")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$[*].name", everyItem(containsStringIgnoringCase("buddy"))));
+    }
+
+    @Test
+    void shouldReturnAllPetsWhenNameIsEmpty() throws Exception {
+        // Given: a pet exists in the database
+        final Owner owner = aSavedOwner();
+        aSavedPet(owner);
+
+        mockMvc.perform(
+            get("/api/v1/pets")
+                .param("name", "")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$.length()").value(greaterThan(0)));
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoPetsMatchName() throws Exception {
+        mockMvc.perform(
+            get("/api/v1/pets")
+                .param("name", "NonExistentPetName12345")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$.length()").value(0));
+    }
+
 }
