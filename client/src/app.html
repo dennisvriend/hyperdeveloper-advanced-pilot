@@ -5,6 +5,23 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="description" content="VetHub - Veterinary Clinic Management System by ilionx" />
 		<meta name="theme-color" content="#E8003D" />
+		<script>
+			// Apply the stored theme before first paint to avoid FOUC.
+			// Mirrors the logic in src/lib/theme.svelte.ts — keep both in sync.
+			(function () {
+				try {
+					var m = localStorage.getItem('vethub-theme') || 'system';
+					var dark =
+						m === 'dark' ||
+						m === 'disco' ||
+						(m === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+					if (dark) document.documentElement.classList.add('dark');
+					if (m === 'disco') document.documentElement.classList.add('disco');
+					var meta = document.querySelector('meta[name="theme-color"]');
+					if (meta) meta.setAttribute('content', dark ? '#0b1220' : '#E8003D');
+				} catch (e) {}
+			})();
+		</script>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

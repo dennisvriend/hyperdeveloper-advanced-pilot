@@ -1,8 +1,11 @@
 @import "tailwindcss";
 
+/* Dark mode variant for Tailwind 4 (class-based, toggled on <html>) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /*
  * ilionx Paws - ilionx Brand Design System
- * Light mode only - clean, professional veterinary clinic feel
+ * Light mode default, with an explicitly authored dark palette and a disco theme
  * Primary: ilionx Red (#E8003D)
  * Typography: Poppins (body - prefer lighter weights), JetBrains Mono (code)
  * Brand values: Helder (clear), Menselijk (human), Kwalitatief (quality)
@@ -73,6 +76,117 @@
   --sidebar-accent-foreground: hsl(0 0% 25%);
   --sidebar-border: hsl(0 0% 88%);
   --sidebar-ring: hsl(344 100% 45%);
+}
+
+/*
+ * Dark palette — explicitly authored, not an automatic inversion.
+ * Dark slate surfaces; ilionx Red stays primary (brightened ring only)
+ * so the brand remains recognisable on dark backgrounds.
+ */
+.dark {
+  --background: hsl(216 44% 8%);
+  --foreground: hsl(210 40% 96%);
+
+  /* Card - slightly lifted dark surface */
+  --card: hsl(217 40% 12%);
+  --card-foreground: hsl(210 40% 96%);
+
+  /* Popover */
+  --popover: hsl(217 40% 12%);
+  --popover-foreground: hsl(210 40% 96%);
+
+  /* Primary - ilionx Red, unchanged */
+  --primary: hsl(344 100% 45%);
+  --primary-foreground: hsl(0 0% 100%);
+
+  /* Secondary - dark gray surface */
+  --secondary: hsl(217 33% 18%);
+  --secondary-foreground: hsl(210 40% 96%);
+
+  /* Muted */
+  --muted: hsl(217 33% 16%);
+  --muted-foreground: hsl(215 20% 65%);
+
+  /* Accent - brighter teal for dark surfaces */
+  --accent: hsl(175 70% 45%);
+  --accent-foreground: hsl(0 0% 100%);
+
+  /* Destructive */
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(0 0% 100%);
+
+  /* Success */
+  --success: hsl(142 70% 45%);
+  --success-foreground: hsl(0 0% 100%);
+
+  /* Warning */
+  --warning: hsl(38 92% 55%);
+  --warning-foreground: hsl(0 0% 10%);
+
+  /* Borders */
+  --border: hsl(217 33% 22%);
+  --input: hsl(217 33% 22%);
+  --ring: hsl(344 100% 55%);
+
+  /* Chart Colors - brightened for dark surfaces */
+  --chart-1: hsl(344 100% 55%);
+  --chart-2: hsl(175 70% 45%);
+  --chart-3: hsl(45 90% 60%);
+  --chart-4: hsl(220 80% 60%);
+  --chart-5: hsl(280 65% 60%);
+
+  /* Sidebar */
+  --sidebar: hsl(217 40% 10%);
+  --sidebar-foreground: hsl(210 40% 96%);
+  --sidebar-primary: hsl(344 100% 45%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(217 33% 16%);
+  --sidebar-accent-foreground: hsl(210 40% 96%);
+  --sidebar-border: hsl(217 33% 22%);
+  --sidebar-ring: hsl(344 100% 55%);
+}
+
+/*
+ * Disco theme - builds on the dark-surface tokens (the `dark` class is
+ * always set together with `disco`) and animates the page background
+ * with a disco-style gradient. Cards, text and the Toaster keep the
+ * dark tokens so everything stays readable.
+ */
+html.disco body,
+/* The app shell paints bg-background over the body — paint the disco
+   gradient on it too */
+html.disco .app-shell {
+  background: linear-gradient(
+    120deg,
+    #2e1065,
+    #831843,
+    #172554,
+    #064e3b,
+    #7c2d12,
+    #4c1d95,
+    #2e1065
+  );
+  background-size: 400% 400%;
+  background-attachment: fixed;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.disco body,
+  html.disco .app-shell {
+    animation: disco-hue 14s ease infinite;
+  }
+}
+
+@keyframes disco-hue {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* Tailwind Theme Integration */

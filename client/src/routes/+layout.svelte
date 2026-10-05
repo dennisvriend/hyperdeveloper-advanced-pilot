@@ -8,7 +8,7 @@
 
 <Toaster position="top-right" richColors closeButton />
 
-<div class="flex min-h-screen flex-col bg-background">
+<div class="app-shell flex min-h-screen flex-col bg-background">
 	<Header />
 
 	<main class="flex-1">
