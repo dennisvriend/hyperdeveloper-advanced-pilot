@@ -1,13 +1,75 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "lsp": {
+    "jdtls": {
+      "disabled": true
+    }
+  },
+  "plugin": [
+    "@mohak34/opencode-notifier@latest",
+    "opencode-acp@stable"
+  ],
+  "compaction": {
+    "auto": false
+  },
   "permission": {
     "bash": {
       "git *": "ask",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
       "git reset *": "deny",
       "git revert *": "deny",
       "git checkout *": "deny",
+      "git push *": "deny",
       "git commit *": "allow",
       "git pull": "allow"
+    },
+    "external_directory": {
+      "~/.config/opencode/**": "allow"
+    }
+  },
+  "agent": {
+    "build": {
+      "disable": false
+    },
+    "plan": {
+      "disable": false
+    },
+    "general": {
+      "disable": false
+    },
+    "explore": {
+      "disable": false
+    }
+  },
+  "mcp": {
+    "codegraph": {
+      "type": "local",
+      "command": [
+        "codegraph",
+        "serve",
+        "--mcp"
+      ],
+      "enabled": true
+    },
+    "context7": {
+      "type": "local",
+      "command": [
+        "bunx",
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ],
+      "enabled": true
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "chrome-devtools-mcp@latest"
+      ],
+      "enabled": true
     }
   }
 }
