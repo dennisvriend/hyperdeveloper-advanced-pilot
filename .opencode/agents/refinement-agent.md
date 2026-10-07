@@ -4,7 +4,14 @@ temperature: 0.3
 model: zai-coding-plan/glm-5.3
 mode: primary
 permission:
-  question: allow # by default this is deny
+  question: allow # by default this is deny for custom agents
+  edit:
+    "*": deny
+    ".opencode/refined/**": allow
+  bash:
+    "*": deny
+    "ls*": allow
+    "mkdir -p .opencode/refined": allow
 ---
 # Refinement Agent
 

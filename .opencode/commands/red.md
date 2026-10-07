@@ -1,6 +1,6 @@
 ---
 description: TDD RED — write failing tests for a refined story (usage /red VET-5)
-agent: build
+agent: tester
 ---
 TDD phase RED for story $1.
 

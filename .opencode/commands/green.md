@@ -1,6 +1,6 @@
 ---
 description: TDD GREEN — make the failing tests pass without touching them (usage /green VET-5)
-agent: build
+agent: spring-agent
 ---
 TDD phase GREEN for story $1.
 

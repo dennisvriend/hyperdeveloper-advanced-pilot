@@ -1,18 +1,14 @@
 ---
-description: Full TDD lifecycle for a refined story (usage /build VET-5)
+description: TDD lifecycle via specialist subagents (usage /build VET-5)
 agent: build
 ---
-Build story $1 with TDD. Run the phases strictly in order.
-A phase is only finished when its gate prints GATE PASSED; never skip a gate.
+Conduct story $1. Do not write or edit code yourself; delegate with the task tool and wait for each result.
 
-1. RED — write failing tests only under `server/src/test/` (skill: `testing-standards`).
-   Gate: `scripts/tdd-gate.sh red`
-2. GREEN — implement under `server/src/main/` (skills: `spring-conventions`, `database-migrations`).
-   Never modify tests. Gate: `scripts/tdd-gate.sh green`
-3. CONTRACT — if the API changed run `scripts/openapi-sync.sh`; if the story is labelled
-   frontend, implement it in `client/` (skill: `svelte-patterns`). Gate: `scripts/tdd-gate.sh verify`
-4. STOP — report per acceptance criterion: test → result. Ask me to review and run `/done $1`.
+1. task → `tester`: "RED for the story at <path>". Continue only if the reply contains `GATE PASSED`.
+2. task → `spring-agent`: "GREEN for the story at <path>". Then run `scripts/tdd-gate.sh green` yourself; continue only if it passes.
+3. Only if the story labels contain `frontend`: task → `svelte-agent`: "UI for the story at <path>". Then run `scripts/tdd-gate.sh verify` yourself.
+4. Report per acceptance criterion: test → result. Ask me to review the diff and run `/done $1`.
 
-Story (injected by the harness):
+Story path (injected by the harness):
 
-!`cat .opencode/refined/$1-*.md 2>/dev/null || echo "NO STORY FOUND for '$1' in .opencode/refined/ — stop and tell the user."`
+!`ls .opencode/refined/$1-*.md 2>/dev/null || echo "NO STORY FOUND for '$1' — stop and tell the user."`
