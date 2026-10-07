@@ -16,10 +16,9 @@ Domain knowledge lives in skills under `.opencode/skills/`:
 - Never commit secrets.
 - Be concise; delegate research to subagents when it saves time.
 
-## Workflow
+## Workflow (TDD)
 
-When I tell you a feature is complete:
-
-1. Move the story from `.opencode/refined/` to `.opencode/completed/`
-2. Prepend the date to the filename (e.g., `20261005-VET-#-<slug>.md`)
-3. Add a row to `.opencode/CHANGELOG.md`
+Refined stories live in `.opencode/refined/`. Build them test-first:
+`/red VET-#` → `/green VET-#` → `/done VET-#` (or `/build VET-#` for the whole cycle).
+Gates are in `scripts/tdd-gate.sh`; a phase is done only when its gate passes.
+Never modify tests to make them pass.
