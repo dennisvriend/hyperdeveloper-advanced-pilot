@@ -38,5 +38,7 @@ server/**config/*.local.properties
 
 /.opencode/
 
+/.codegraph/
+
 # Downloaded OpenAPI spec (regenerate via scripts/openapi-sync.sh)
 /server/openapi.json
