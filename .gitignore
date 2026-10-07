@@ -36,7 +36,6 @@ server/**config/*.local.properties
 /server/.project
 /server/.settings/org.eclipse.buildship.core.prefsc
 
-/.opencode/
 
 /.codegraph/
 
